@@ -10,12 +10,17 @@ namespace FileSumOfBytes.Logic.Model
     /// <summary>
     /// Working with files.
     /// </summary>
-    public class FileOptions : IFileOptions
+    public class FileOptions
     {
         /// <summary>
         /// Collection of results(file name and hash).
         /// </summary>
         public ObservableCollection<FileHashSum> FilesInfo { get; } = new ObservableCollection<FileHashSum>();
+
+        /// <summary>
+        /// File analysis completion event.
+        /// </summary>
+        public event Action<string> IsEnded; 
 
         /// <summary>
         /// Thread synchronization (locker).
@@ -74,6 +79,18 @@ namespace FileSumOfBytes.Logic.Model
             if (directories.Length == 0) return;
 
             Parallel.ForEach(directories, AnalyzeFiles);
+        }
+
+        /// <summary>
+        /// Async version AnalyzeFiles method.
+        /// </summary>
+        /// <param name="directory"></param>
+        public async void AnalyzeFilesAsync(DirectoryInfo directory)
+        {
+            await Task.Run(() => AnalyzeFiles(directory));
+            WriteToXml(directory);
+
+            IsEnded?.Invoke("Анализ завершён.");
         }
 
         /// <summary>

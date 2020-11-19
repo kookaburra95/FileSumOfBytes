@@ -1,28 +1,50 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.IO;
-using System.Runtime.CompilerServices;
 using FileSumOfBytes.Logic.Model;
 using FileOptions = FileSumOfBytes.Logic.Model.FileOptions;
 
 namespace FileSumOfBytes.CMD
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            //test
-            var tempTestDirectoryPath = "testFolder\\";
+            Console.WriteLine("Для завершения нажмите любую клавишу.\n" +
+                              "Если программа не закончила работу, данные не будут сохранены.\n" +
+                              "Дождитесь информации о завершении работы программы.\n\n");
+            
+            while (true)
+            {
+                Console.WriteLine("Введите директорию:");
+                var directoryPath = Console.ReadLine();
 
-            //TODO:write logic for work
+                if (string.IsNullOrEmpty(directoryPath))
+                {
+                    Console.WriteLine("Неккоректный ввод. Повторите ввод.");
+                    continue;
+                }
 
-            var directory = new DirectoryInfo(tempTestDirectoryPath);
+                var directory = new DirectoryInfo(directoryPath);
 
-            var fileOptions = new FileOptions();
-            fileOptions.FilesInfo.CollectionChanged += ShowFileInfo;
+                if (!directory.Exists)
+                {
+                    Console.WriteLine("Директория не найдена. Повторите ввод.");
+                    continue;
+                }
 
-            fileOptions.AnalyzeFiles(directory);
-            fileOptions.WriteToXml(directory);
+                Console.WriteLine("\nИнформация о файлах:\n");
+
+                var fileOptions = new FileOptions();
+                fileOptions.FilesInfo.CollectionChanged += ShowFileInfo;
+                fileOptions.IsEnded += IsEndedMessage;
+
+
+                fileOptions.AnalyzeFilesAsync(directory);
+                break;
+            }
+            
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -32,6 +54,16 @@ namespace FileSumOfBytes.CMD
         {
             if (e.Action != NotifyCollectionChangedAction.Add) return;
             if (e.NewItems[0] is FileHashSum newFile) Console.WriteLine($"{newFile.Name} - {newFile.HashSum}");
+        }
+
+        /// <summary>
+        /// Handles the event of ended analyze files and prints message to the console.
+        /// </summary>
+        private static void IsEndedMessage(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }
