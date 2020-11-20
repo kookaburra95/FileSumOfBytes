@@ -118,9 +118,11 @@ namespace FileSumOfBytes.Logic.Model
                 rootNode.AppendChild(fileInfoNode);
             }
 
-            var fs = new FileStream($"{directory.FullName}\\{directory.Name}.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Delete);
-            xml.Save(fs);
-            fs.Close();
+            using (var fs = new FileStream($"{directory.FullName}\\{directory.Name}.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Delete))
+            {
+                xml.Save(fs);
+                FilesInfo.Clear();
+            }
         }
     }
 }

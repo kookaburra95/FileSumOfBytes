@@ -1,0 +1,56 @@
+﻿<Window x:Class="FileSumOfBytes.WPF.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileSumOfBytes.WPF.View"
+        xmlns:vm="clr-namespace:FileSumOfBytes.WPF.ViewModels"
+        mc:Ignorable="d"
+        Title="File Sum of Bytes" Height="500" Width="800"
+        FontFamily="Bahnschrift" FontSize="16" WindowStartupLocation="CenterScreen">
+
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="tbFolder" Grid.Column="0" Text="{Binding DirectoryPath}" Padding="10 3 10 0" Background="#FFE8E8EA" Foreground="#FFB4B4B4"/>
+            <Button x:Name="btFolder" Grid.Column="1" Content="Выбрать папку" 
+                    BorderBrush="#FFDDDDDD" 
+                    Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" 
+                    Command="{Binding ChooseFolderCommand}"/>
+        </Grid>
+
+        <DataGrid x:Name="dgFilesInfo" Grid.Row="1"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding FilesInfo}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Имя файла" 
+                                    Binding="{Binding Name}" 
+                                    Width="*"/>
+                <DataGridTextColumn Header="Хэш-сумма" 
+                                    Binding="{Binding HashSum}"
+                                    Width="400" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button x:Name="btAnalysis" Grid.Row="2" 
+                Content="Анализ файлов" 
+                BorderBrush="#FFDDDDDD" 
+                Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" 
+                Command="{Binding StartAnalysisFilesCommand}"
+                IsEnabled="{Binding IsAnalysisEnded}"/>
+    </Grid>
+</Window>
