@@ -120,6 +120,7 @@ namespace FileSumOfBytes.Logic.Model
 
             var fs = new FileStream($"{directory.FullName}\\{directory.Name}.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Delete);
             xml.Save(fs);
+            fs.Close();
         }
     }
 }
